@@ -24,11 +24,9 @@ String BluetoothData; // the data given from Computer
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(108, PIN, NEO_GRB + NEO_KHZ800);
 //Global Variables
-uint8_t r=250; //////////////////  //DFAULT GLOBAL RGB (r=250, g=150, b=30)
-uint8_t g=150;////Global RGB////
-uint8_t b=30;//////////////////
-uint8_t ro=150; uint8_t go=20; uint8_t bo=100;  //DEFAULT CLOUD (crossFade) COLOR 1 (purple: ro=150, go=20, bo=100)
-uint8_t rf=50; uint8_t gf=50; uint8_t bf=150;   //DEFAULT CLOUD (crossFade) COLOR 2 (blue: ro=50, go=50, bo=150)
+uint8_t r; uint8_t g; uint8_t b; //initialize Cabin Lighting Color global red, green, & blue variables
+uint8_t ro; uint8_t go; uint8_t bo;  //initialize Cloud Crossfade Color 1 global red, green, & blue variables 
+uint8_t rf; uint8_t gf; uint8_t bf;   //initialize Cloud Crossfade Color 2 global red, green, & blue variables
 short level; //brightness level
 
 void setup() {
@@ -44,10 +42,15 @@ void setup() {
   strip.begin();  
   strip.show(); // Initialize all pixels to 'off'
 
-//Startup Sequence
+//Startup Sequence: Color wipes the strip with pure white and then wipes the strip off. This indicates that the arduino has turned on and has entered void loop()
   colorWipe(strip.Color(255, 255,255), .1); 
   colorWipe(strip.Color(0, 0,0), .1); 
   delay(500);
+  
+//Define Global red, green, and blue values  
+  setGlobalRGB (250, 150, 30); //sets Cabin Lighting Color in red, green, & blue values **DEFAULT: (r=250, g=150, b=30)
+  ro=150;  go=20;  bo=100;  //set Cloud Crossfade Color 1 in red, green, & blue values **DEFAULT: (purple: ro=150, go=20, bo=100)
+  rf=50;  gf=50;  bf=150;   //set Cloud Crossfade Color 2 in red, green, & blue values **DEFAULT: (blue: ro=50, go=50, bo=150)
 }
 
 void loop() {
