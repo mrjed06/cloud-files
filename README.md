@@ -8,6 +8,9 @@ Code consists of separate functions that are called to display unique lighting e
 Cabin Lighting Colors:  
 Change the cabin lighting color by modifying the three inputs of the setGlobalRGB(Ro,Go,Bo) function called at the end of  void Setup(). The Ro, Go, and Bo inputs of the setGlobalRGB(Ro,Go,Bo) takes values 0-255 and correspond to the actual r, g, and b values that define the cabin light color.
 
+# Additional Effect Customization 
+Other effect parameters, such as effect speed, can be modified in the lines preceding each lighting effect function definition. Refer to the code annotations for specifics. 
+
 Crossfade Light Effect Colors:  
 Change the two colors blended in the Crossfade effect by  modifying the six inputs of the crossFade(ro,go,bo,rf,gf,bf) function/(s) called within void loop(). The ro, go, and bo inputs correspond to the r, g, and b values of the first color and the rf, gf, and bf inputs correspond to the r, g, and b values of the second color. All six inputs take values 0-255.
 
