@@ -12,14 +12,13 @@ r=1, g=81, b=132 -- Timberwolves Blue
 -----------------------------------------------------*/
 
 #include <SoftwareSerial.h>// import the serial library
-#include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h> //import neepixel library
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
 #define PIN 6
 
 SoftwareSerial ddawg(10, 11); // RX, TX
-uint8_t BoardLed=13; // led on D13 will show blink on / off
 String BluetoothData; // the data given from Computer
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(108, PIN, NEO_GRB + NEO_KHZ800);
@@ -33,7 +32,6 @@ void setup() {
 //BLUETOOTH SETUP
   ddawg.begin(9600);
   ddawg.println("Bluetooth On please press 1 or 0 blink LED ..");
-  pinMode(BoardLed,OUTPUT);
 
 //Serial Setup for Debuging
   Serial.begin(9600);
@@ -70,13 +68,13 @@ BluetoothData=ddawg.readString();
       OFF(); 
     }
 //////////////////////////////////////////    
-//Ambient Lights Max (Level 3) Intensity//    
+//Ambient Lights Level 2 Intensity//    
     if (BluetoothData=="brighten"){
       Serial.println(BluetoothData);
       brighten();  
     }
 /////////////////////////////////////////    
-///Ambient Lights Level 2 Intensity ON///    
+///Ambient Lights Level 1 Intensity///    
     if (BluetoothData=="dim"){
       Serial.println(BluetoothData); 
       dim(); 
@@ -99,15 +97,13 @@ BluetoothData=ddawg.readString();
 
 
 //------------------------------------------My Functions----------------------------------------------
-//Set a Global RGB values
-void setGlobalRGB (uint8_t Ro, uint8_t Go, uint8_t Bo) {
+void setGlobalRGB (uint8_t Ro, uint8_t Go, uint8_t Bo) {  //Set a Global RGB values
   r=Ro;
   g=Go;
   b=Bo;
 }
 
-// Set the entire strip to one color
-void setStripColor(uint8_t Ro, uint8_t Go, uint8_t Bo) {
+void setStripColor(uint8_t Ro, uint8_t Go, uint8_t Bo) {  // Set the entire strip to one color
  uint16_t i;
  for(i=0; i< strip.numPixels(); i++) {
           strip.setPixelColor(i, Ro, Go, Bo);
@@ -116,14 +112,14 @@ void setStripColor(uint8_t Ro, uint8_t Go, uint8_t Bo) {
 }
 
 
-//----------CUSTOM PARAMETERS----------
+//----------crossFade CUSTOM PARAMETERS----------
 uint16_t speedfade = 60;      // 60ms internal crossFade delay; increase for slower fades
 boolean DEBUG = 0;      // DEBUG counter; if set to 1, will write values back via serial
 uint16_t loopCount = 60; // How often should DEBUG report?
 short CONTRAST=1020; //specifies how many crossfade (intermediate colors between first and second colors) are to be calculated
 //-------------------------------------
 
-void crossFade(uint8_t Ro, uint8_t Go, uint8_t Bo, uint8_t Rf, uint8_t Gf, uint8_t Bf) { 
+void crossFade(uint8_t Ro, uint8_t Go, uint8_t Bo, uint8_t Rf, uint8_t Gf, uint8_t Bf) { //light effect transitioning between 2 colors
 if (DEBUG){  // for debugging....flash initial and final color before displaying transition
   setStripColor(Ro,Go,Bo);delay(1000);
   setStripColor(Rf,Gf,Bf);delay(1000);
@@ -191,7 +187,7 @@ for (n=0; n<strip.numPixels(); n++){ //create modified R G and B arrays with col
      }
 }
 
-for (n=0; n<strip.numPixels(); n++) { //DEBUGGING PURPOSES...DELETE
+for (n=0; n<strip.numPixels(); n++) {
     strip.setPixelColor(n,Rmod[n],Gmod[n],Bmod[n]); //set each pixel to different color
 }  
 //strip.show();  //freeze the colors before moving...DEBUGING Purposes
@@ -212,7 +208,7 @@ for (n=0; n<strip.numPixels(); n++) { //DEBUGGING PURPOSES...DELETE
                 }
                   strip.setPixelColor(strip.numPixels()-k,Rmod[p],Gmod[p],Bmod[p]); //set each pixel to different color
                      
-                  if (ddawg.available()){                               //RETURN TO VOID LOOP
+                  if (ddawg.available()){                               //RETURN TO VOID LOOP if cadbin lights off or cloud off buttons pressed
                     BluetoothData=ddawg.readString();
                     Serial.println(BluetoothData);
                     if(BluetoothData=="cloudoff" || BluetoothData=="ledoff"){ 
@@ -255,8 +251,8 @@ for (n=0; n<strip.numPixels(); n++) { //DEBUGGING PURPOSES...DELETE
 
 
 
-//Find Maximum of 3 RGB values
-uint16_t maxRGB(uint16_t Ro, uint16_t Go, uint16_t Bo)
+
+uint16_t maxRGB(uint16_t Ro, uint16_t Go, uint16_t Bo) //Find Maximum of 3 RGB values
 {
   uint16_t maxguess;
 
@@ -267,13 +263,13 @@ uint16_t maxRGB(uint16_t Ro, uint16_t Go, uint16_t Bo)
 }
 
 
-//Incrementally brighten the global RGB values
-//----------CUSTOM PARAMETERS----------
+
+//----------brighten() CUSTOM PARAMETERS----------
 uint16_t speed_brighten=2; //transition speed
 uint8_t level2=150; //light brightness level 0-255
 //-------------------------------------
-void brighten() {
-      Serial.println("start rgb");
+void brighten() { //Incrementally brighten cabin lights
+      Serial.println("start rgb"); //SERIAL PRINT IS FOR DEBUGGING
       Serial.println(r);
       Serial.println(g);
       Serial.println(b);
@@ -289,7 +285,7 @@ void brighten() {
       }
       delay(speed_brighten);
     }   
-      Serial.println("final rgb");
+      Serial.println("final rgb"); //SERIAL PRINT IS FOR DEBUGGING
       Serial.println(r);
       Serial.println(g);
       Serial.println(b);
@@ -297,31 +293,24 @@ void brighten() {
 }
 
 
-//Turn global RGB values to max intensity
-//----------CUSTOM PARAMETERS----------
+//----------ON() CUSTOM PARAMETERS----------
 uint16_t speed_ON=5; //transition speed
 //-------------------------------------
-void ON() {
+void ON() { //cabin lights to max intensity
   while(level<=255){
    setStripColor(r*level/255, g*level/255, b*level/255);
    level++;
    delay(speed_ON);
-  } 
-            
-            //setStripColor(0,0,0);
-              //  delay(100);
-            //setStripColor(r, g, b);
-             //   delay(100); //DELETE WHEN DONE TESTING           
+  }           
 }
 
 
-//Incrementally dim the global RGB values
-//----------CUSTOM PARAMETERS----------
+//----------dim() CUSTOM PARAMETERS----------
 uint16_t speed_dim=2;//transition speed
 uint8_t level1=50; //light brightness level 0-255
-
-void dim() {
-      Serial.println("start rgb");
+//----------------------------------------------
+void dim() { //Incrementally dim the cabin lights
+      Serial.println("start rgb"); //SERIAL PRINT IS FOR DEBUGGING
       Serial.println(r);
       Serial.println(g);
       Serial.println(b);
@@ -337,7 +326,7 @@ void dim() {
       }
       delay(speed_dim);
     }   
-      Serial.println("final rgb");
+      Serial.println("final rgb"); //SERIAL PRINT IS FOR DEBUGGING
       Serial.println(r);
       Serial.println(g);
       Serial.println(b);
@@ -346,12 +335,10 @@ void dim() {
 
 
 
-//Turn global RGB values off
-//----------CUSTOM PARAMETERS----------
+//----------OFF() CUSTOM PARAMETERS----------
 uint16_t speed_OFF=.01; //transition speed
 //-------------------------------------
-
-void OFF() {
+void OFF() { // Turn cabin lights off
  if (level<=0){
    setStripColor(0,0,0);
  }
@@ -366,7 +353,6 @@ void OFF() {
 //---------Custom Parameters----------
 uint16_t speed_STROBE=200; //speed of strobe light
 //------------------------------------
-
 void STROBE() {
  setStripColor(200,200,200);
  delay(speed_STROBE);
@@ -383,7 +369,7 @@ void STROBE() {
  }
 }
 
-//-------------------------------STOCK FUNCTIONS--------------------------------------
+//-------------------------------STOCK ADAFRUIT NEOPIXEL FUNCTIONS--------------------------------------
 // Fill the dots one after the other with a color
 void colorWipe(uint32_t c, uint8_t wait) {
   for(uint16_t i=0; i<strip.numPixels(); i++) {
